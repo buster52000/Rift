@@ -44,16 +44,32 @@ public abstract class RObj implements Cloneable {
 
 	public void setX(int x) {
 		if (canMove && !UI.getResized()) {
-			this.aX = x;
-			int i = UI.getFWidth();
-			if (i == 0)
-				i = 1;
-			this.x = (1300 * x) / i;
+			this.x = x;
+			this.aX = UI.getScaledWidth(x);
 			getPanel().setLocation(aX, getAY());
 		}
 	}
 
 	public void setY(int y) {
+		if (canMove && !UI.getResized()) {
+			this.y = y;
+			this.aY = UI.getScaledHeight(y);
+			getPanel().setLocation(getAX(), aY);
+		}
+	}
+
+	public void setAX(int x) {
+		if (canMove && !UI.getResized()) {
+			this.aX = x;
+			int i = UI.getFWidth();
+			if (i == 0)
+				i = 1;
+			this.x = (1300 * x) / i;
+			getPanel().setLocation(x, getAY());
+		}
+	}
+	
+	public void setAY(int y) {
 		if (canMove && !UI.getResized()) {
 			this.aY = y;
 			int i = UI.getFHeight();

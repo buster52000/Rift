@@ -23,10 +23,12 @@ public class Play implements KeyListener, MouseListener {
 	private ArrayList<Integer> pressed = new ArrayList<Integer>();
 	private int jumpInProgress;
 	private boolean enterRift;
+	private static boolean pause;
 
 	public Play(UI ui) {
 		this.ui = ui;
 		jumpInProgress = 0;
+		pause = false;
 	}
 
 	public boolean playLevel(int level) throws Exception {
@@ -109,10 +111,11 @@ public class Play implements KeyListener, MouseListener {
 															} else {
 																options = o2;
 															}
+															if (level == 0)
+																JOptionPane.showMessageDialog(null, "You have completed the game!");
 															int option = JOptionPane.showOptionDialog(null, "You completed " + lvl.getLevel() + "!", "Level Complete!", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, 0);
 															exitPlay = true;
 															if (level == 0) {
-																JOptionPane.showMessageDialog(null, "You have completed the game!");
 																ui.getJFrame().setVisible(false);
 																ui.getJFrame().dispose();
 																return !((options.length == 2 && (option == 1 || option == -1) || (options.length == 3 && (option == 2 || option == -1))));
@@ -147,8 +150,8 @@ public class Play implements KeyListener, MouseListener {
 															if (rift == null)
 																throw new Exception("Rift not found");
 															if (rift.isActivated()) {
-																plr.setX(rift.getAX());
-																plr.setY(rift.getAY());
+																plr.setAX(rift.getAX());
+																plr.setAY(rift.getAY());
 																enterRift = false;
 															}
 															cont = false;
@@ -161,7 +164,7 @@ public class Play implements KeyListener, MouseListener {
 										break;
 									}
 									if (dir != 0 && !exitPlay) {
-										p.setLocation(plr.getAX() + dir, plr.getAY());
+										p.setLocation(UI.getScaledWidth(plr.getX() + dir), plr.getAY());
 										for (RObj o : objs) {
 											if (!o.canIntersect())
 												if (doIntersect(p, o.getPanel()))
@@ -170,7 +173,7 @@ public class Play implements KeyListener, MouseListener {
 										if ((plr.getX() - 1 < 0 && dir < 0) || (plr.getX() + Level.P_WIDTH + 1 > UI.MAX_WIDTH && dir > 0))
 											canMove = false;
 										if (canMove) {
-											plr.setX(plr.getAX() + dir);
+											plr.setX(plr.getX() + dir);
 											ui.getJFrame().repaint();
 										}
 									}
@@ -180,7 +183,7 @@ public class Play implements KeyListener, MouseListener {
 							if (!exitPlay) {
 								canMove = true;
 								if (jumpInProgress != 0) {
-									p.setLocation(plr.getAX(), plr.getAY() - 2);
+									p.setLocation(plr.getAX(), UI.getScaledHeight(plr.getY() - 2));
 									for (RObj o : objs) {
 										if (!o.canIntersect())
 											if (doIntersect(p, o.getPanel()))
@@ -188,7 +191,7 @@ public class Play implements KeyListener, MouseListener {
 									}
 									if (canMove) {
 										jumpInProgress--;
-										plr.setY(plr.getAY() - 2);
+										plr.setY(plr.getY() - 2);
 										ui.getJFrame().repaint();
 									} else
 										jumpInProgress = 0;
@@ -201,14 +204,14 @@ public class Play implements KeyListener, MouseListener {
 									tP.setSize(UI.getScaledWidth(10), UI.getScaledHeight(10));
 									if (doIntersect(tP, objs.get(3).getPanel())) {
 										if (((Rift) objs.get(2)).isActivated()) {
-											plr.setX(objs.get(2).getAX());
-											plr.setY(objs.get(2).getAY());
+											plr.setAX(objs.get(2).getAX());
+											plr.setAY(objs.get(2).getAY());
 											enterRift = false;
 										}
 									} else if (doIntersect(tP, objs.get(2).getPanel())) {
 										if (((Rift) objs.get(3)).isActivated()) {
-											plr.setX(objs.get(3).getAX());
-											plr.setY(objs.get(3).getAY());
+											plr.setAX(objs.get(3).getAX());
+											plr.setAY(objs.get(3).getAY());
 											enterRift = false;
 										}
 									}
@@ -243,7 +246,7 @@ public class Play implements KeyListener, MouseListener {
 				Player plr = (Player) objs.get(0);
 				JPanel p = new JPanel();
 				p.setSize(plr.getAWidth(), plr.getAHeight());
-				p.setLocation(plr.getAX(), plr.getAY() + 1);
+				p.setLocation(plr.getAX(), UI.getScaledHeight(plr.getY() + 1));
 				boolean canJump = false;
 				for (RObj o : objs) {
 					if (!o.canIntersect())
@@ -331,10 +334,10 @@ public class Play implements KeyListener, MouseListener {
 				r = (Rift) objs.get(3);
 				break;
 			default:
-				objs.get(2).setX(UI.getFWidth());
-				objs.get(2).setY(UI.getFHeight());
-				objs.get(3).setX(UI.getFWidth());
-				objs.get(3).setY(UI.getFHeight());
+				objs.get(2).setAX(UI.getFWidth());
+				objs.get(2).setAY(UI.getFHeight());
+				objs.get(3).setAX(UI.getFWidth());
+				objs.get(3).setAY(UI.getFHeight());
 				((Rift) objs.get(2)).setActive(false);
 				((Rift) objs.get(3)).setActive(false);
 				break;
@@ -347,8 +350,8 @@ public class Play implements KeyListener, MouseListener {
 					}
 				}
 				if (temp) {
-					r.setX(x);
-					r.setY(y);
+					r.setAX(x);
+					r.setAY(y);
 					r.setActive(true);
 				}
 			}

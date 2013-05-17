@@ -25,7 +25,7 @@ public class UI extends JFrame implements ComponentListener {
 		mainPanel = new JPanel();
 		frame = new JFrame("Rift");
 		frame.setExtendedState(MAXIMIZED_BOTH);
-		frame.setMinimumSize(new Dimension(100, 100));
+		frame.setMinimumSize(new Dimension(500, 200));
 		frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
 		mainPanel.setLayout(null);
 		frame.add(mainPanel);
@@ -69,6 +69,11 @@ public class UI extends JFrame implements ComponentListener {
 	}
 
 	public void finishResize() {
+		try {
+			Thread.sleep(15);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 		resize = false;
 	}
 

@@ -30,7 +30,7 @@ public class PhysEngine {
 					Player plr = (Player) objs.get(0);
 					JPanel p = new JPanel();
 					p.setSize(plr.getAWidth(), plr.getAHeight());
-					p.setLocation(plr.getAX(), plr.getAY() + 1);
+					p.setLocation(plr.getAX(), UI.getScaledHeight(plr.getY() + 1));
 					boolean canFall = true;
 					for (RObj o : objs) {
 						if (!o.canIntersect())
@@ -41,7 +41,7 @@ public class PhysEngine {
 					if (canFall) {
 						stillFalling = true;
 						if (!UI.getResized())
-							objs.get(0).setY(objs.get(0).getAY() + 1);
+							objs.get(0).setY(objs.get(0).getY() + 1);
 					} else {
 						stillFalling = false;
 						dFallen = 0;
