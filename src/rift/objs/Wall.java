@@ -11,9 +11,11 @@ import rift.*;
 public class Wall extends RObj {
 
 	private JPanel wall;
+	private int [] actionGetters;
 
-	public Wall(int rLocationX, int rLocationY, int rHeight, int rWidth, Color color, int actionReceiver) {
-		super(4, rLocationX, rLocationY, rHeight, rWidth, true, actionReceiver);
+	public Wall(int rLocationX, int rLocationY, int rHeight, int rWidth, Color color, int [] actionSenders) {
+		super(4, rLocationX, rLocationY, rHeight, rWidth, true, -1);
+		this.actionGetters = actionSenders;
 		wall = new JPanel();
 		wall.setBackground(color);
 		resize();
@@ -55,13 +57,14 @@ public class Wall extends RObj {
 	}
 
 	
-	public void constantAction(ArrayList<RObj> objs) {
-		
+	public int constantAction(ArrayList<RObj> objs) {
+		return 0;
 	}
 	
-	public void action(ArrayList<RObj> objs, int actionBy) {		
+	public int action(ArrayList<RObj> objs, int actionBy) {		
 		if(isMoveable() && actionBy == getActionReceiver()) {
 			
 		}
+		return 0;
 	}
 }

@@ -94,13 +94,13 @@ public class Rift extends RObj {
 	}
 
 	
-	public void constantAction(ArrayList<RObj> objs) {
-		
+	public int constantAction(ArrayList<RObj> objs) {
+		return 0;
 	}
 
 	
-	public void action(ArrayList<RObj> objs, int actionBy) {
-		
+	public int action(ArrayList<RObj> objs, int actionBy) {
+		return 0;
 	}
 
 }

@@ -139,9 +139,9 @@ public abstract class RObj implements Cloneable {
 
 	public abstract boolean canFireThrough();
 
-	public abstract void constantAction(ArrayList<RObj> objs);
+	public abstract int constantAction(ArrayList<RObj> objs);
 
-	public abstract void action(ArrayList<RObj> objs, int actionBy);
+	public abstract int action(ArrayList<RObj> objs, int actionBy);
 
 	protected Object clone() throws CloneNotSupportedException {
 		return super.clone();

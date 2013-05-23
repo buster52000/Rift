@@ -22,7 +22,8 @@ public class Play implements KeyListener, MouseListener {
 	private ArrayList<JPanel> panels = new ArrayList<JPanel>();
 	private ArrayList<Integer> pressed = new ArrayList<Integer>();
 	private int jumpInProgress;
-	private boolean enterRift;
+	private int enterRift;
+	private boolean exitPlay, exitGame;
 	private static boolean pause;
 
 	public Play(UI ui) {
@@ -33,9 +34,9 @@ public class Play implements KeyListener, MouseListener {
 
 	public boolean playLevel(int level) throws Exception {
 		if (Ryan.isAwesome()) {
-			boolean exitGame = false;
+			exitGame = false;
 			while (!exitGame) {
-				boolean exitPlay = false;
+				exitPlay = false;
 				Level lvl;
 				switch (level) {
 				case 1:
@@ -82,8 +83,8 @@ public class Play implements KeyListener, MouseListener {
 							p.setSize(plr.getAWidth(), plr.getAHeight());
 							boolean canMove = true;
 							try {
+								int dir = 0;
 								for (int t : pressed) {
-									int dir = 0;
 									switch (t) {
 									case 68:
 										if (plr.getFacing() != 2)
@@ -152,7 +153,8 @@ public class Play implements KeyListener, MouseListener {
 															if (rift.isActivated()) {
 																plr.setAX(rift.getAX());
 																plr.setAY(rift.getAY());
-																enterRift = false;
+																enterRift = rift.getType();
+																pressed.remove(new Integer(83));
 															}
 															cont = false;
 														}
@@ -163,7 +165,7 @@ public class Play implements KeyListener, MouseListener {
 										}
 										break;
 									}
-									if (dir != 0 && !exitPlay) {
+									if (dir != 0 && !exitPlay && phys.getMomentum() == 0) {
 										p.setLocation(UI.getScaledWidth(plr.getX() + dir), plr.getAY());
 										for (RObj o : objs) {
 											if (!o.canIntersect())
@@ -178,6 +180,7 @@ public class Play implements KeyListener, MouseListener {
 										}
 									}
 								}
+								phys.momentum(dir);
 							} catch (ConcurrentModificationException e) {
 							}
 							if (!exitPlay) {
@@ -198,31 +201,37 @@ public class Play implements KeyListener, MouseListener {
 								} else {
 									phys.gravity(jumpInProgress);
 								}
-								if (enterRift) {
-									JPanel tP = new JPanel();
-									tP.setLocation(UI.getScaledWidth(plr.getX() + (Level.P_WIDTH / 2 - 5)), UI.getScaledHeight(plr.getY() + (Level.P_HEIGHT / 2 - 5)));
-									tP.setSize(UI.getScaledWidth(10), UI.getScaledHeight(10));
-									if (doIntersect(tP, objs.get(3).getPanel())) {
-										if (((Rift) objs.get(2)).isActivated()) {
-											plr.setAX(objs.get(2).getAX());
-											plr.setAY(objs.get(2).getAY());
-											enterRift = false;
-										}
-									} else if (doIntersect(tP, objs.get(2).getPanel())) {
-										if (((Rift) objs.get(3)).isActivated()) {
-											plr.setAX(objs.get(3).getAX());
-											plr.setAY(objs.get(3).getAY());
-											enterRift = false;
-										}
+								JPanel tP = new JPanel();
+								tP.setLocation(UI.getScaledWidth(plr.getX() + (Level.P_WIDTH / 2 - 5)), UI.getScaledHeight(plr.getY() + (Level.P_HEIGHT / 2 - 5)));
+								tP.setSize(UI.getScaledWidth(10), UI.getScaledHeight(10));
+								if (enterRift != 3 && doIntersect(tP, objs.get(3).getPanel())) {
+									if (((Rift) objs.get(2)).isActivated()) {
+										plr.setAX(objs.get(2).getAX());
+										plr.setAY(objs.get(2).getAY());
+										enterRift = 2;
 									}
-								} else {
-									if (!doIntersect(plr.getPanel(), objs.get(3).getPanel()) && !doIntersect(plr.getPanel(), objs.get(2).getPanel()))
-										enterRift = true;
+								} else if (enterRift != 2 && doIntersect(tP, objs.get(2).getPanel())) {
+									if (((Rift) objs.get(3)).isActivated()) {
+										plr.setAX(objs.get(3).getAX());
+										plr.setAY(objs.get(3).getAY());
+										enterRift = 3;
+									}
 								}
+								if (!doIntersect(plr.getPanel(), objs.get(3).getPanel()) && !doIntersect(plr.getPanel(), objs.get(2).getPanel()))
+									enterRift = 0;
 								try {
 									Thread.sleep(7);
 								} catch (InterruptedException e) {
 								}
+							}
+							ArrayList<RObj> t = new ArrayList<RObj>();
+							for (RObj o : objs) {
+								t.add((RObj) o.clone());
+							}
+							for (RObj o : t) {
+								int r = o.constantAction(objs);
+								if(r != 0)
+									doAction(r);
 							}
 						}
 					}
@@ -249,10 +258,8 @@ public class Play implements KeyListener, MouseListener {
 				p.setLocation(plr.getAX(), UI.getScaledHeight(plr.getY() + 1));
 				boolean canJump = false;
 				for (RObj o : objs) {
-					if (!o.canIntersect())
-						if (doIntersect(p, o.getPanel())) {
-							canJump = true;
-						}
+					if (!o.canIntersect() && doIntersect(p, o.getPanel()))
+						canJump = true;
 				}
 				if (canJump)
 					jumpInProgress = (int) Level.P_HEIGHT / 2;
@@ -279,6 +286,24 @@ public class Play implements KeyListener, MouseListener {
 	public static boolean doIntersect(JPanel p1, JPanel p2) {
 		boolean Q = p1.getBounds().intersects(p2.getBounds());
 		return Q;
+	}
+
+	public void doAction(int i) {
+		switch (i) {
+		case 1:
+			restartLvl();
+		}
+	}
+
+	public void restartLvl() {
+		ui.getJFrame().setVisible(false);
+		ui.getJFrame().dispose();
+		ui = new UI();
+		objs.clear();
+		panels.clear();
+		pressed.clear();
+		jumpInProgress = 0;
+		exitPlay = true;
 	}
 
 	public void keyReleased(KeyEvent key) {
