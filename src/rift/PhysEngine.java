@@ -66,9 +66,18 @@ public class PhysEngine {
 				}
 		}
 		if (canFall) {
-			if (momentum == 0 && plr.getX() > 0 && plr.getX() < UI.MAX_WIDTH - Level.P_WIDTH)
+			if (momentum == 0)
 				momentum = dir;
-			if (plr.getX() - 1 >= 0 && plr.getX() + Level.P_WIDTH <= UI.MAX_WIDTH)
+			p.setLocation(UI.getScaledWidth(plr.getX() + momentum), plr.getAY());
+			p.setSize(plr.getAWidth(), plr.getAHeight());
+			boolean good = true;
+			for(RObj o : objs) {
+				if(Play.doIntersect(p, o.getPanel()) && !o.canIntersect()) {
+					good = false;
+					momentum = 0;
+				}
+			}
+			if (plr.getX() - 1 >= 0 && plr.getX() + Level.P_WIDTH <= UI.MAX_WIDTH && good)
 				objs.get(0).setX(plr.getX() + momentum);
 		} else {
 			momentum = 0;

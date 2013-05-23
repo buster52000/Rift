@@ -1,5 +1,6 @@
 package rift.objs;
 
+import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Image;
 import java.io.File;
@@ -7,6 +8,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
+import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -37,6 +39,7 @@ public class Player extends RObj {
 			e.printStackTrace();
 		}
 		lbl.setIcon(new ImageIcon(img));
+		plr.setLayout(new BorderLayout());
 		plr.add(lbl);
 		resize();
 	}
