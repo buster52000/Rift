@@ -25,6 +25,7 @@ public class Play implements KeyListener, MouseListener {
 	private int enterRift;
 	private boolean exitPlay, exitGame;
 	private static boolean pause;
+	private Level[] lvls = new Level[2];
 
 	public Play(UI ui) {
 		this.ui = ui;
@@ -37,27 +38,10 @@ public class Play implements KeyListener, MouseListener {
 			exitGame = false;
 			while (!exitGame) {
 				exitPlay = false;
-				Level lvl;
-				switch (level) {
-				case 1:
-					lvl = new Lvl1();
-					break;
-				case 2:
-					lvl = new Lvl2();
-					break;
-				default:
-					lvl = new Lvl1();
-					exitPlay = true;
-					try {
-						throw new Exception("Unknown level");
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-					System.exit(0);
-					break;
-				}
-
-				if (!exitPlay) {
+				LevelCont controller = new LevelCont();
+				lvls = controller.getLvls();
+				Level lvl = lvls[level - 1];
+				if (!exitPlay && !pause) {
 					ArrayList<RObj> temp = lvl.getObjs();
 					for (RObj r : temp) {
 						try {
@@ -183,7 +167,7 @@ public class Play implements KeyListener, MouseListener {
 								phys.momentum(dir);
 							} catch (ConcurrentModificationException e) {
 							}
-							if (!exitPlay) {
+							if (!exitPlay && !pause) {
 								canMove = true;
 								if (jumpInProgress != 0) {
 									p.setLocation(plr.getAX(), UI.getScaledHeight(plr.getY() - 2));
