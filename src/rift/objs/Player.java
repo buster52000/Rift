@@ -22,6 +22,7 @@ public class Player extends RObj {
 	private JPanel plr;
 	private Image img;
 	private JLabel lbl;
+	private boolean invEmpty;
 
 	public Player(int x, int y, int face, int height, int width) {
 		super(0, x, y, height, width, true, -1);
@@ -41,6 +42,7 @@ public class Player extends RObj {
 		lbl.setIcon(new ImageIcon(img));
 		plr.setLayout(new BorderLayout());
 		plr.add(lbl);
+		invEmpty = true;
 		resize();
 	}
 
@@ -109,6 +111,14 @@ public class Player extends RObj {
 
 	public int action(ArrayList<RObj> objs, int actionBy) {
 		return 0;
+	}
+	
+	public boolean invIsEmpty() {
+		return invEmpty;
+	}
+	
+	public void setInvIsEmpty(boolean inv) {
+		invEmpty = inv;
 	}
 
 }

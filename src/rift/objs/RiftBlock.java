@@ -17,6 +17,7 @@ public class RiftBlock extends RObj {
 		super(7, locationX, locationY, height, width, false, -1);
 		panel = new JPanel();
 		panel.setBackground(Color.LIGHT_GRAY);
+		resize();
 	}
 
 	
