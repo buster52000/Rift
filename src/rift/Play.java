@@ -27,11 +27,12 @@ public class Play implements KeyListener, MouseListener {
 	private int enterRift;
 	private boolean exitPlay, exitGame;
 	private static boolean pause;
-	private Level[] lvls = new Level[2];
+	private ArrayList<Level> lvls;
 
 	public Play(UI ui) {
 		this.ui = ui;
 		jumpInProgress = 0;
+		lvls = new ArrayList<Level>();
 		pause = false;
 	}
 
@@ -43,7 +44,7 @@ public class Play implements KeyListener, MouseListener {
 				exitPlay = false;
 				LevelCont controller = new LevelCont();
 				lvls = controller.getLvls();
-				Level lvl = lvls[level - 1];
+				Level lvl = lvls.get(level - 1);
 				if (!exitPlay && !pause) {
 					ArrayList<RObj> temp = lvl.getObjs();
 					for (RObj r : temp) {

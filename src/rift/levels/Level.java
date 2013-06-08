@@ -4,7 +4,9 @@ import java.util.ArrayList;
 
 import rift.RObj;
 import rift.objs.*;
+import rift.levels.*;
 
+@SuppressWarnings("unused")
 public abstract class Level {
 
 	protected ArrayList<RObj> objs;

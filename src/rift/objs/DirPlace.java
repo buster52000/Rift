@@ -7,12 +7,12 @@ import javax.swing.JPanel;
 import rift.RObj;
 import rift.levels.Level;
 
-public class RiftPlace extends RObj {
+public class DirPlace extends RObj {
 
-	private JPanel panel;
-
-	public RiftPlace(int locationX, int locationY, int actionSender) {
-		super(10, locationX, locationY, Level.P_HEIGHT, Level.P_WIDTH, false, actionSender, false);
+	JPanel panel;
+	
+	public DirPlace(int locationX, int locationY, int actionSender, int dir) {
+		super(11, locationX, locationY, Level.P_HEIGHT, Level.P_WIDTH, false, actionSender, false);
 		panel = new JPanel();
 		resize();
 	}
@@ -48,4 +48,5 @@ public class RiftPlace extends RObj {
 	public int action(ArrayList<RObj> objs, int actionBy) {
 		return 0;
 	}
+
 }
