@@ -21,28 +21,29 @@ public class PhysEngine {
 		momentum = 0;
 	}
 
-	public void gravity(int jumpInProgress) {
-		if (!UI.getResized()) {
-			if (dFallen % 15 == 0 && speed <= 10)
-				speed++;
-			dFallen += speed;
-			for (int i = 0; i < speed; i++) {
-				if (jumpInProgress == 0) {
-					Player plr = (Player) objs.get(0);
+	public void gravity(RObj obj) {
+		if (objs == null) {
+			throw new NullPointerException("Object passed to gravity is null");
+		} else {
+			if (!UI.getResized()) {
+				if (dFallen % 15 == 0 && speed <= 20)
+					speed++;
+				dFallen += speed;
+				for (int i = 0; i < speed; i++) {
 					JPanel p = new JPanel();
-					p.setSize(plr.getAWidth(), plr.getAHeight());
-					p.setLocation(plr.getAX(), UI.getScaledHeight(plr.getY() + 1));
+					p.setSize(obj.getAWidth(), obj.getAHeight());
+					p.setLocation(obj.getAX(), UI.getScaledHeight(obj.getY() + 1));
 					boolean canFall = true;
 					for (RObj o : objs) {
 						if (!o.canIntersect())
-							if (Play.doIntersect(p, o.getPanel())) {
+							if (Play.doIntersect(p, o.getPanel()) && !o.getPanel().equals(obj.getPanel())) {
 								canFall = false;
 							}
 					}
 					if (canFall) {
 						stillFalling = true;
 						if (!UI.getResized())
-							objs.get(0).setY(objs.get(0).getY() + 1);
+							obj.setY(obj.getY() + 1);
 					} else {
 						stillFalling = false;
 						dFallen = 0;
@@ -71,8 +72,8 @@ public class PhysEngine {
 			p.setLocation(UI.getScaledWidth(plr.getX() + momentum), plr.getAY());
 			p.setSize(plr.getAWidth(), plr.getAHeight());
 			boolean good = true;
-			for(RObj o : objs) {
-				if(Play.doIntersect(p, o.getPanel()) && !o.canIntersect()) {
+			for (RObj o : objs) {
+				if (Play.doIntersect(p, o.getPanel()) && !o.canIntersect()) {
 					good = false;
 					momentum = 0;
 				}

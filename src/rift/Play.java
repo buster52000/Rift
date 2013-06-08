@@ -6,6 +6,8 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.geom.Line2D;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.ConcurrentModificationException;
 
 import javax.swing.JOptionPane;
@@ -34,6 +36,7 @@ public class Play implements KeyListener, MouseListener {
 	}
 
 	public boolean playLevel(int level) throws Exception {
+		objs.clear();
 		if (Ryan.isAwesome()) {
 			exitGame = false;
 			while (!exitGame) {
@@ -53,6 +56,7 @@ public class Play implements KeyListener, MouseListener {
 							e.printStackTrace();
 						}
 					}
+					sortPanels();
 					ui.draw(panels);
 					ui.getJFrame().addKeyListener(this);
 					ui.getJFrame().getComponent(0).addMouseListener(this);
@@ -183,7 +187,7 @@ public class Play implements KeyListener, MouseListener {
 									} else
 										jumpInProgress = 0;
 								} else {
-									phys.gravity(jumpInProgress);
+									phys.gravity(plr);
 								}
 								JPanel tP = new JPanel();
 								tP.setLocation(UI.getScaledWidth(plr.getX() + (Level.P_WIDTH / 2 - 5)), UI.getScaledHeight(plr.getY() + (Level.P_HEIGHT / 2 - 5)));
@@ -208,13 +212,9 @@ public class Play implements KeyListener, MouseListener {
 								} catch (InterruptedException e) {
 								}
 							}
-							ArrayList<RObj> t = new ArrayList<RObj>();
 							for (RObj o : objs) {
-								t.add((RObj) o.clone());
-							}
-							for (RObj o : t) {
 								int r = o.constantAction(objs);
-								if(r != 0)
+								if (r != 0)
 									doAction(r);
 							}
 						}
@@ -230,6 +230,27 @@ public class Play implements KeyListener, MouseListener {
 			p.resize();
 		}
 		ui.getJFrame().repaint();
+	}
+
+	public void sortPanels() {
+		@SuppressWarnings("unchecked")
+		ArrayList<RObj> tObj = (ArrayList<RObj>) objs.clone();
+		Comparator<RObj> comp = new Comparator<RObj>() {
+
+			public int compare(RObj arg0, RObj arg1) {
+				if (arg0.getOrderLoc() > arg1.getOrderLoc())
+					return 1;
+				else if (arg0.getOrderLoc() < arg1.getOrderLoc())
+					return -1;
+				return 0;
+			}
+
+		};
+		Collections.sort(tObj, comp);
+		panels.clear();
+		for (RObj o : tObj) {
+			panels.add(o.getPanel());
+		}
 	}
 
 	public void keyPressed(KeyEvent key) {
@@ -262,6 +283,16 @@ public class Play implements KeyListener, MouseListener {
 			} while (exception);
 			if (temp)
 				pressed.add(i);
+		} else if (i == 69) {
+			Player plr = (Player) objs.get(0);
+			JPanel p = new JPanel();
+			p.setLocation(UI.getScaledWidth(plr.getX() - 10), plr.getAY());
+			p.setSize(UI.getScaledWidth(plr.getWidth() + 20), plr.getAHeight());
+			for (RObj o : objs)
+				if (o.actionNeedIntersect() && doIntersect(p, o.getPanel()))
+					o.action(objs, 0);
+				else if (!o.actionNeedIntersect())
+					o.action(objs, 0);
 		} else {
 			System.out.println("Invalid Key - " + i);
 		}
@@ -276,6 +307,7 @@ public class Play implements KeyListener, MouseListener {
 		switch (i) {
 		case 1:
 			restartLvl();
+			break;
 		}
 	}
 
@@ -316,52 +348,65 @@ public class Play implements KeyListener, MouseListener {
 
 	public void mouseReleased(MouseEvent e) {
 		int button = e.getButton();
-		int x = e.getX() - objs.get(2).getAWidth() / 2;
-		int y = e.getY() - objs.get(2).getAHeight() / 2;
-		boolean good = true;
-		int t = button;
-		if (button == 1) {
-			t = 2;
-		}
-		JPanel rift = new JPanel();
-		rift.setSize(objs.get(t).getAWidth(), objs.get(t).getAHeight());
-		rift.setLocation(x, y);
-		for (RObj o : objs) {
-			if (o.getType() != 0 && o.getType() != 2 && o.getType() != 3) {
-				if (doIntersect(o.getPanel(), rift)) {
+		if (button == 2) {
+			objs.get(2).setAX(UI.getFWidth());
+			objs.get(2).setAY(UI.getFHeight());
+			objs.get(3).setAX(UI.getFWidth());
+			objs.get(3).setAY(UI.getFHeight());
+			((Rift) objs.get(2)).setActive(false);
+			((Rift) objs.get(3)).setActive(false);
+		} else {
+			int x = e.getX() - objs.get(2).getAWidth() / 2;
+			int y = e.getY() - objs.get(2).getAHeight() / 2;
+			boolean good = true;
+			int t = button;
+			if (button == 1) {
+				t = 2;
+			}
+			JPanel rift = new JPanel();
+			rift.setSize(objs.get(t).getAWidth(), objs.get(t).getAHeight());
+			rift.setLocation(x, y);
+			JPanel click = new JPanel();
+			click.setLocation(e.getX(), e.getY());
+			click.setSize(1, 1);
+			for (RObj o : objs) {
+				if ((doIntersect(o.getPanel(), rift) && !o.riftCanIntersect()) || (o.getType() == 10 && doIntersect(o.getPanel(), click))) {
 					good = false;
-				}
-			}
-		}
-		if (good) {
-			Rift r = null;
-			switch (button) {
-			case 1:
-				r = (Rift) objs.get(2);
-				break;
-			case 3:
-				r = (Rift) objs.get(3);
-				break;
-			default:
-				objs.get(2).setAX(UI.getFWidth());
-				objs.get(2).setAY(UI.getFHeight());
-				objs.get(3).setAX(UI.getFWidth());
-				objs.get(3).setAY(UI.getFHeight());
-				((Rift) objs.get(2)).setActive(false);
-				((Rift) objs.get(3)).setActive(false);
-				break;
-			}
-			if (r != null) {
-				boolean temp = true;
-				for (RObj o : objs) {
-					if (!o.canFireThrough() && o.getPanel().getBounds().intersectsLine(new Line2D.Float(x, y, objs.get(0).getAX() + objs.get(0).getAWidth() / 2, objs.get(0).getAY() + objs.get(0).getAHeight() / 2))) {
-						temp = false;
+					if (o.getType() == 10 && doIntersect(o.getPanel(), click)) {
+						if (button == 1) {
+							objs.get(2).setX(o.getX());
+							objs.get(2).setY(o.getY());
+							((Rift) objs.get(2)).setActive(true);
+						} else if (button == 3) {
+							objs.get(3).setX(o.getX());
+							objs.get(3).setY(o.getY());
+							((Rift) objs.get(3)).setActive(true);
+						}
 					}
 				}
-				if (temp) {
-					r.setAX(x);
-					r.setAY(y);
-					r.setActive(true);
+			}
+			if (good) {
+				Rift r = null;
+				switch (button) {
+				case 1:
+					r = (Rift) objs.get(2);
+					break;
+				case 3:
+					r = (Rift) objs.get(3);
+					break;
+				}
+				if (r != null) {
+					boolean temp = true;
+					for (RObj o : objs) {
+						if (!o.canFireThrough() && o.getPanel().getBounds().intersectsLine(new Line2D.Float(x, y, objs.get(0).getAX() + objs.get(0).getAWidth() / 2, objs.get(0).getAY() + objs.get(0).getAHeight() / 2))) {
+							temp = false;
+						}
+					}
+					if (temp) {
+						r.setAX(x);
+						r.setAY(y);
+						r.setActive(true);
+					}
 				}
 			}
 		}

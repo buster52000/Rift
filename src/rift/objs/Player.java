@@ -1,20 +1,17 @@
 package rift.objs;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.awt.Image;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
-import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import rift.RObj;
-import rift.UI;
 
 public class Player extends RObj {
 
@@ -22,25 +19,36 @@ public class Player extends RObj {
 	private JPanel plr;
 	private Image img;
 	private JLabel lbl;
+	private RObj inv;
+	private int imageType;
 
 	public Player(int x, int y, int face, int height, int width) {
-		super(0, x, y, height, width, true, -1);
+		super(0, x, y, height, width, true, -1, false);
 		facing = face;
 		plr = new JPanel();
 		lbl = new JLabel();
 		plr.setOpaque(false);
 		lbl.setOpaque(false);
+		imageType = 0;
 		try {
-			if (facing == 1)
-				img = ImageIO.read(new File("pics/plrL.png"));
-			else
-				img = ImageIO.read(new File("pics/plrR.png"));
+			if (imageType == 0) {
+				if (facing == 1)
+					img = ImageIO.read(new File("pics/plrL.png"));
+				else
+					img = ImageIO.read(new File("pics/plrR.png"));
+			} else if(imageType == 1) {
+				if (facing == 1)
+					img = ImageIO.read(new File("pics/plrLCube.png"));
+				else
+					img = ImageIO.read(new File("pics/plrRCube.png"));
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		lbl.setIcon(new ImageIcon(img));
 		plr.setLayout(new BorderLayout());
 		plr.add(lbl);
+		inv = null;
 		resize();
 	}
 
@@ -51,10 +59,17 @@ public class Player extends RObj {
 	public void setFacing(int facing) {
 		this.facing = facing;
 		try {
-			if (facing == 1)
-				img = ImageIO.read(new File("pics/plrL.png"));
-			else
-				img = ImageIO.read(new File("pics/plrR.png"));
+			if (imageType == 0) {
+				if (facing == 1)
+					img = ImageIO.read(new File("pics/plrL.png"));
+				else
+					img = ImageIO.read(new File("pics/plrR.png"));
+			} else if(imageType == 1) {
+				if (facing == 1)
+					img = ImageIO.read(new File("pics/plrLCube.png"));
+				else
+					img = ImageIO.read(new File("pics/plrRCube.png"));
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -68,22 +83,21 @@ public class Player extends RObj {
 
 	public void resize() {
 		try {
-			if (facing == 1)
-				img = ImageIO.read(new File("pics/plrL.png"));
-			else
-				img = ImageIO.read(new File("pics/plrR.png"));
+			if (imageType == 0) {
+				if (facing == 1)
+					img = ImageIO.read(new File("pics/plrL.png"));
+				else
+					img = ImageIO.read(new File("pics/plrR.png"));
+			} else if(imageType == 1) {
+				if (facing == 1)
+					img = ImageIO.read(new File("pics/plrLCube.png"));
+				else
+					img = ImageIO.read(new File("pics/plrRCube.png"));
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		aX = UI.getScaledWidth(getX());
-		aY = UI.getScaledHeight(getY());
-		aHeight = UI.getScaledHeight(getHeight());
-		aWidth = UI.getScaledWidth(getWidth());
-		plr.setSize(aWidth, aHeight);
-		plr.setPreferredSize(new Dimension(aWidth, aHeight));
-		plr.setLocation(aX, aY);
-		plr.setMaximumSize(plr.getPreferredSize());
-		plr.setMinimumSize(plr.getPreferredSize());
+		super.resize();
 		if (aWidth == 0)
 			aWidth = 1;
 		if (aHeight == 0)
@@ -91,7 +105,6 @@ public class Player extends RObj {
 		img = img.getScaledInstance(aWidth, aHeight, Image.SCALE_DEFAULT);
 		lbl.setIcon(new ImageIcon(img));
 		plr.repaint();
-		System.out.println("(aX, aY) = (" + aX + ", " + aY + ")");
 	}
 
 	public boolean canIntersect() {
@@ -109,6 +122,30 @@ public class Player extends RObj {
 
 	public int action(ArrayList<RObj> objs, int actionBy) {
 		return 0;
+	}
+
+	public RObj getInv() {
+		return inv;
+	}
+
+	public void setInv(RObj inv) {
+		this.inv = inv;
+	}
+
+	public int getOrderLoc() {
+		return 0;
+	}
+
+	public void setImgType(int img) {
+		imageType = img;
+	}
+	
+	public boolean actionNeedIntersect() {
+		return false;
+	}
+
+	public boolean riftCanIntersect() {
+		return true;
 	}
 
 }

@@ -102,4 +102,13 @@ public class UI extends JFrame implements ComponentListener {
 		return width;
 	}
 
+	
+	public int getHeight() {
+		return height;
+	}
+	
+	public int getWidth() {
+		return width;
+	}
+
 }

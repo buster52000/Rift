@@ -1,5 +1,6 @@
 package rift;
 
+import java.awt.Dimension;
 import java.util.ArrayList;
 
 import javax.swing.JPanel;
@@ -7,11 +8,12 @@ import javax.swing.JPanel;
 public abstract class RObj implements Cloneable {
 
 	private int x, y, height, width, type, actionReceiver;
-	private boolean canMove;
+	private boolean canMove, hasAction;
 	protected int aX, aY, aHeight, aWidth;
 
-	public RObj(int type, int locationX, int locationY, int height, int width, boolean movable, int actionReceiver) {
+	public RObj(int type, int locationX, int locationY, int height, int width, boolean movable, int actionReceiver, boolean hasAction) {
 		this.actionReceiver = actionReceiver;
+		this.hasAction = hasAction;
 		this.type = type;
 		x = locationX;
 		y = locationY;
@@ -68,7 +70,7 @@ public abstract class RObj implements Cloneable {
 			getPanel().setLocation(x, getAY());
 		}
 	}
-	
+
 	public void setAY(int y) {
 		if (canMove && !UI.getResized()) {
 			this.aY = y;
@@ -114,6 +116,10 @@ public abstract class RObj implements Cloneable {
 		return aY;
 	}
 
+	public boolean doesHaveAction() {
+		return hasAction;
+	}
+
 	/**
 	 * Returns if the object is movable by the player
 	 * 
@@ -131,7 +137,24 @@ public abstract class RObj implements Cloneable {
 		return actionReceiver;
 	}
 
-	public abstract void resize();
+	public void resize() {
+		JPanel panel = getPanel();
+		aX = UI.getScaledWidth(getX());
+		aY = UI.getScaledHeight(getY());
+		aHeight = UI.getScaledHeight(getHeight());
+		aWidth = UI.getScaledWidth(getWidth());
+		panel.setSize(aWidth, aHeight);
+		panel.setPreferredSize(new Dimension(aWidth, aHeight));
+		panel.setLocation(aX, aY);
+		panel.setMaximumSize(panel.getPreferredSize());
+		panel.setMinimumSize(panel.getPreferredSize());
+	}
+
+	public abstract int getOrderLoc();
+
+	public abstract boolean actionNeedIntersect();
+
+	public abstract boolean riftCanIntersect();
 
 	public abstract JPanel getPanel();
 

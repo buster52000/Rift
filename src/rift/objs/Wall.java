@@ -1,7 +1,6 @@
 package rift.objs;
 
 import java.awt.Color;
-import java.awt.Dimension;
 import java.util.ArrayList;
 
 import javax.swing.JPanel;
@@ -11,33 +10,26 @@ import rift.*;
 public class Wall extends RObj {
 
 	private JPanel wall;
-	private int [] actionGetters;
+	private boolean canFire, canIntersect, riftIntersect, canOpen;
 
-	public Wall(int rLocationX, int rLocationY, int rHeight, int rWidth, Color color, int [] actionSenders) {
-		super(4, rLocationX, rLocationY, rHeight, rWidth, true, -1);
-		this.actionGetters = actionSenders;
+	public Wall(int rLocationX, int rLocationY, int rHeight, int rWidth, Color color, int actionSender) {
+		super(4, rLocationX, rLocationY, rHeight, rWidth, false, actionSender, false);
+		canOpen = true;
 		wall = new JPanel();
 		wall.setBackground(color);
+		canFire = false;
+		canIntersect = false;
 		resize();
 	}
 	
 	public Wall(int rLocationX, int rLocationY, int rHeight, int rWidth, Color color) {
-		super(4, rLocationX, rLocationY, rHeight, rWidth, false, -1);
+		super(4, rLocationX, rLocationY, rHeight, rWidth, false, -1, false);
+		canOpen = false;
 		wall = new JPanel();
 		wall.setBackground(color);
+		canFire = false;
+		canIntersect = false;
 		resize();
-	}
-
-	public void resize() {
-		aX = UI.getScaledWidth(getX());
-		aY = UI.getScaledHeight(getY());
-		aHeight = UI.getScaledHeight(getHeight());
-		aWidth = UI.getScaledWidth(getWidth());
-		wall.setSize(aWidth, aHeight);
-		wall.setPreferredSize(new Dimension(aWidth, aHeight));
-		wall.setLocation(aX, aY);
-		wall.setMaximumSize(wall.getPreferredSize());
-		wall.setMinimumSize(wall.getPreferredSize());
 	}
 
 	public JPanel getPanel() {
@@ -46,14 +38,14 @@ public class Wall extends RObj {
 
 	
 	public boolean canIntersect() {
-		return false;
+		return canIntersect;
 	}
 
 	
 	public boolean canFireThrough() {
-		if(wall.getBackground().equals(Color.BLACK))
-			return false;
-		return true;
+		if(wall.getBackground().equals(Color.GRAY))
+			return true;
+		return canFire;
 	}
 
 	
@@ -62,9 +54,24 @@ public class Wall extends RObj {
 	}
 	
 	public int action(ArrayList<RObj> objs, int actionBy) {		
-		if(isMoveable() && actionBy == getActionReceiver()) {
-			
+		if(canOpen && actionBy == getActionReceiver()) {
+			wall.setEnabled(!wall.isEnabled());
+			wall.setOpaque(!wall.isOpaque());
+			canFire = !canFire;
+			canIntersect = !canIntersect;
 		}
 		return 0;
+	}
+
+	public int getOrderLoc() {
+		return 1;
+	}
+	
+	public boolean actionNeedIntersect() {
+		return false;
+	}
+
+	public boolean riftCanIntersect() {
+		return riftIntersect;
 	}
 }

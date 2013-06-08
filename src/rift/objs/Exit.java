@@ -1,7 +1,6 @@
 package rift.objs;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.awt.Image;
 import java.io.File;
 import java.io.IOException;
@@ -13,7 +12,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import rift.RObj;
-import rift.UI;
 
 public class Exit extends RObj {
 	public static final int E_HEIGHT = 93;
@@ -23,7 +21,7 @@ public class Exit extends RObj {
 	private Image img;
 	
 	public Exit(int locationX, int locationY) {
-		super(1, locationX, locationY, E_HEIGHT, E_WIDTH, false, -1);
+		super(1, locationX, locationY, E_HEIGHT, E_WIDTH, false, -1, false);
 		exit = new JPanel();
 		lbl = new JLabel();
 		try {
@@ -39,15 +37,7 @@ public class Exit extends RObj {
 
 	
 	public void resize() {
-		aX = UI.getScaledWidth(getX());
-		aY = UI.getScaledHeight(getY());
-		aHeight = UI.getScaledHeight(getHeight());
-		aWidth = UI.getScaledWidth(getWidth());
-		exit.setSize(aWidth, aHeight);
-		exit.setPreferredSize(new Dimension(aWidth, aHeight));
-		exit.setLocation(aX, aY);
-		exit.setMaximumSize(exit.getPreferredSize());
-		exit.setMinimumSize(exit.getPreferredSize());
+		super.resize();
 		try {
 			img = ImageIO.read(new File("pics/exit.png"));
 		} catch (IOException e) {
@@ -84,5 +74,17 @@ public class Exit extends RObj {
 	
 	public int action(ArrayList<RObj> objs, int actionBy) {
 		return 0;
+	}
+
+	public int getOrderLoc() {
+		return 1;
+	}
+
+	public boolean actionNeedIntersect() {
+		return true;
+	}
+
+	public boolean riftCanIntersect() {
+		return false;
 	}
 }

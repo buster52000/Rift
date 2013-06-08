@@ -1,6 +1,5 @@
 package rift.objs;
 
-import java.awt.Dimension;
 import java.awt.Font;
 import java.util.ArrayList;
 
@@ -8,7 +7,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import rift.RObj;
-import rift.UI;
 
 public class Text extends RObj {
 	
@@ -17,7 +15,7 @@ public class Text extends RObj {
 	private JLabel lbl;
 
 	public Text(int locationX, int locationY, int height, int width, String txt, int textSize) {
-		super(6, locationX, locationY, height, width, false, -1);
+		super(6, locationX, locationY, height, width, false, -1, false);
 		this.txt = txt;
 		text = new JPanel();
 		lbl = new JLabel(this.txt);
@@ -25,22 +23,6 @@ public class Text extends RObj {
 		text.add(lbl);
 		resize();
 	}
-
-	
-	public void resize() {
-		
-		aX = UI.getScaledWidth(getX());
-		aY = UI.getScaledHeight(getY());
-		aHeight = UI.getScaledHeight(getHeight());
-		aWidth = UI.getScaledWidth(getWidth());
-		text.setSize(aWidth, aHeight);
-		text.setPreferredSize(new Dimension(aWidth, aHeight));
-		text.setLocation(aX, aY);
-		text.setMaximumSize(text.getPreferredSize());
-		text.setMinimumSize(text.getPreferredSize());
-		
-	}
-
 	
 	public JPanel getPanel() {
 		
@@ -69,6 +51,18 @@ public class Text extends RObj {
 	public int action(ArrayList<RObj> objs, int actionBy) {
 		
 		return 0;
+	}
+
+	public int getOrderLoc() {
+		return 0;
+	}
+
+	public boolean actionNeedIntersect() {
+		return false;
+	}
+
+	public boolean riftCanIntersect() {
+		return true;
 	}
 
 }

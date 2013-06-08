@@ -1,7 +1,6 @@
 package rift.objs;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.awt.Image;
 import java.io.File;
 import java.io.IOException;
@@ -24,7 +23,7 @@ public class Rift extends RObj {
 	private boolean active;
 	
 	public Rift(int type) {
-		super(type, UI.MAX_WIDTH, UI.MAX_HEIGHT, Level.P_HEIGHT, Level.P_WIDTH, true, -1);
+		super(type, UI.MAX_WIDTH, UI.MAX_HEIGHT, Level.P_HEIGHT, Level.P_WIDTH, true, -1, false);
 		active = false;
 		rift = new JPanel();
 		lbl = new JLabel();
@@ -45,6 +44,7 @@ public class Rift extends RObj {
 	}
 
 	public void resize() {
+		super.resize();
 		try {
 			if(getType() == 2)
 				img = ImageIO.read(new File("pics/rRift.png"));
@@ -53,22 +53,12 @@ public class Rift extends RObj {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		aX = UI.getScaledWidth(getX());
-		aY = UI.getScaledHeight(getY());
-		aHeight = UI.getScaledHeight(getHeight());
-		aWidth = UI.getScaledWidth(getWidth());
 		if (aWidth == 0)
 			aWidth = 1; 
 		if (aHeight == 0)
 			aHeight = 1;
 		img = img.getScaledInstance(aWidth, aHeight, Image.SCALE_SMOOTH);
 		lbl.setIcon(new ImageIcon(img));
-		rift.setSize(aWidth, aHeight);
-		rift.setPreferredSize(new Dimension(aWidth, aHeight));
-		rift.setLocation(aX, aY);
-		rift.setMaximumSize(rift.getPreferredSize());
-		rift.setMinimumSize(rift.getPreferredSize());
-		rift.repaint();
 	}
 
 	public JPanel getPanel() {
@@ -101,6 +91,18 @@ public class Rift extends RObj {
 	
 	public int action(ArrayList<RObj> objs, int actionBy) {
 		return 0;
+	}
+
+	public int getOrderLoc() {
+		return 3;
+	}
+
+	public boolean actionNeedIntersect() {
+		return false;
+	}
+
+	public boolean riftCanIntersect() {
+		return false;
 	}
 
 }
