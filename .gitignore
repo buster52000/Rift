@@ -5,5 +5,5 @@
 .metadata
 
 # Java Build Files
-bin/
+bin/*
 *.class
